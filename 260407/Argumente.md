@@ -1,7 +1,7 @@
 # Arbeitsbericht
 
 - Name:     Enrico Weiser
-- Datum:    24.03.2026
+- Datum:    07.04.2026
 - Thema:    Shell Script Argumente
 - Fach:     Syt-B
 - Klasse:   3AHITS
