@@ -1,0 +1,7 @@
+
+=====file1.txt==================
+file 1 hallo
+=====file2.txt==================
+file 2 hallo
+=====file3.txt==================
+file 3 moin
