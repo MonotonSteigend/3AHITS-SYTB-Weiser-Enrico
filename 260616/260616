@@ -1,0 +1,261 @@
+# Arbeitsbericht
+
+- Name:     Enrico Weiser
+- Datum:    16.06.2026
+- Thema:    Schleifen
+- Fach:     Syt-B
+- Klasse:   3AHITS
+
+## Mitschrift
+
+[schleifen.sh](/scripts/schleifen.sh)
+```sh
+
+#!/bin/bash
+ 
+# while
+counter=1
+#while [ $counter -le 10 ] # <= 10
+while ((counter <= 10))
+do
+    echo $counter
+    ((counter++))
+done
+ 
+# for
+ 
+echo "--- for ---"
+# Liste = durch white-spaces getrennter string
+data="1 2 3 4 5 6 7"
+for d in $data
+do
+    echo $d
+done
+ 
+ 
+echo "--- Kommandozeilenargumente ---"
+for arg in $@
+do
+    echo $arg
+done
+ 
+# brace expamsion {]
+for value in {20..25}
+do
+    echo $value
+done
+ 
+ 
+echo "--- field seperator ---"
+mylist="hallo welt,hello world,guten tag;ni hao"
+IFS=",;" #internal field separator
+for el in $mylist
+do
+    echo $el
+done
+
+```
+
+### While
+- mit dem Test Kommando ``while [ $counter -le 10 ] # <= 10``
+- mit bash Arithmetik ``while ((counter <= 10))
+``
+
+### For 
+Ein Datensatz ``data="1 2 3 4 5 6 7"``, wird mit ``for d in $data`` durchlaufen wobei `d` die Laufvariable ist. 
+
+
+### Brace Expansion
+mit ``for value in {20..25}`` wird von eine Liste mit den Werten von 20 bis 25 durchgelaufen wobei ``values`` die Laufvariable ist.
+
+- Mit variablen kann man keine Brace Expansion machen (https://stackoverflow.com/questions/19432753/brace-expansion-with-variable)
+
+
+### Field seperator
+Der Field seperator ist eine variable ``IFS`` (internal field seperator), mit dem bestimmt wird nach was die datensätze wie ``values``, oder ``data`` getrennt werden
+- Default: ``" "`` (Leerzeichen)
+
+
+## Übung (Even/Odd)
+
+Create a simple script which will print the numbers 1–42 (each on a separate line) and whether they are even or odd.
+
+
+[even_odd.sh](/scripts/even_odd.sh)
+```sh
+#!/bin/bash
+
+for num in {0..42}
+do
+  if ((num % 2 == 0))
+  then
+    echo "$num even"
+  else 
+    echo "$num odd"
+  fi
+done
+```
+
+Ausführung: 
+```sh
+rici@envy-u:~/HTL/3AHITS/Syt-B/Labor/Matejka/3AHITS-SYTB-Weiser-Enrico/260616/scripts$ ./even_odd.sh 
+0 even
+1 odd
+2 even
+3 odd
+4 even
+5 odd
+6 even
+7 odd
+8 even
+9 odd
+10 even
+11 odd
+12 even
+13 odd
+14 even
+15 odd
+16 even
+17 odd
+18 even
+19 odd
+20 even
+21 odd
+22 even
+23 odd
+24 even
+25 odd
+26 even
+27 odd
+28 even
+29 odd
+30 even
+31 odd
+32 even
+33 odd
+34 even
+35 odd
+36 even
+37 odd
+38 even
+39 odd
+40 even
+41 odd
+42 even
+```
+
+## Übung (Summe und Maximum)
+Schreibe ein bash Skript das eine beliebige Menge von positiven Zahlen als Argumente aus der Kommandozeile übernimmt. Es soll die Summe und die größte Zahl ausgegeben werden. Hinweis: Verwende ``@``.
+
+
+[sum_max.sh](/scripts/sum_max.sh)
+```sh
+#!/bin/bash
+
+max=0
+sum=0
+
+for value in $@
+do
+  ((sum=sum+value))
+  if((value>max))
+  then
+    max=$value
+  fi
+done
+
+echo "Maximum: $max"
+echo "Summe: $sum"
+
+```
+
+## Übung (Min)
+Schreibe ein bash Skript das den Namen einer Datei als Argument akzeptiert:
+
+``$ ./min.sh input.txt``
+
+Die Input Datei enthält positive Zahlen die durch white spaces getrennt sind:
+
+```
+42
+21 57
+68 33 1
+1
+```
+
+
+Das Skript soll die kleinste Zahl ermitteln und ausgeben.
+
+Hinweis:
+
+Der größte mögliche Wert in bash scripting ist 64 Bit signed
+
+```
+$ ((MAXINT=2**63-1))
+$ echo $MAXINT
+9223372036854775807
+```
+
+[min.sh](/scripts/min.sh)
+```sh
+#!/bin/bash
+
+min=""
+
+for value in $(<"$1")
+do
+  if [[ -z "$min" ]] || ((value < min))
+  then
+    min=$value
+  fi
+done
+
+echo "$min"
+```
+- mit ``$(<"$1")`` wird der Inhalt der Datei in den stdin der Command substitution weitergeleitet und dann ins Script eingefügt.
+
+Ausführung
+```
+rici@envy-u:~/HTL/3AHITS/Syt-B/Labor/Matejka/3AHITS-SYTB-Weiser-Enrico/260616/scripts$ ./min.sh data.txt 
+1
+```
+
+## Übung (Durchschnitt)
+Schreibe ein bash Skript das eine beliebige Anzahl von Zahlen von stdin akzeptiert und den (ganzzahligen) Durchschnitt der Zahlen ausgibt.
+
+``$ echo 3 5 7 2 4 | ./avg.sh``
+
+Wie Daten von stdin gelesen werden können ist zu recherchieren.
+
+Teste das Skript und verwende dieses dann um den Durchschnitts-Wert für die Spalte Stück in der Datei lager.csv zu finden. Hinweis: Verwende cut und tail für die vorverarbeitung der Daten.
+
+Recherche: https://superuser.com/questions/834502/possible-to-get-a-bash-script-to-accept-input-from-terminal-if-its-stdin-has-bee
+
+[average.sh](/scripts/average.sh)
+```sh
+#!/bin/bash
+
+sum=0
+count=0
+average=0
+
+read nums
+
+for number in $nums
+do
+
+  ((sum+=number))
+  ((count++))
+done
+
+((average=sum/count))
+
+echo $average
+
+```
+
+Ausführung
+```sh
+rici@envy-u:~/HTL/3AHITS/Syt-B/Labor/Matejka/3AHITS-SYTB-Weiser-Enrico/260616/scripts$ echo 3 5 7 2 4 | ./average.sh
+4
+```
